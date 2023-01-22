@@ -2,7 +2,7 @@
 
 ## Requrirments
 
-pip install streamlit nltp textblob newspaper
+     pip install streamlit nltp textblob newspaper
 
 ## How to run
 
