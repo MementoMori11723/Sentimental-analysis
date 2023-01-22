@@ -8,9 +8,9 @@ st.title("Sentimental analysis")
 
 # try this :-
 
-url = 'https://www.fairobserver.com/politics/us-emergency-departments-are-overstretched-and-doctors-burned-out/'
+# url = 'https://www.fairobserver.com/politics/us-emergency-departments-are-overstretched-and-doctors-burned-out/'
 
-# url = 'https://en.wikipedia.org/wiki/Mathematics'
+url = 'https://en.wikipedia.org/wiki/Mathematics'
 
 artical = Article(url)
 artical.download()
