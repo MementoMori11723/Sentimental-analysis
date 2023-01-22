@@ -1,10 +1,16 @@
 from textblob import TextBlob
 from newspaper import Article
-# import nltk
+import streamlit as st
+st.set_page_config(page_title="Sentimental analysis",
+                   page_icon=None, layout="centered")
 
-# nltk.download('punkt')
+st.title("Sentimental analysis")
 
-url = 'https://en.wikipedia.org/wiki/Mathematics'
+# try this :-
+
+url = 'https://www.fairobserver.com/politics/us-emergency-departments-are-overstretched-and-doctors-burned-out/'
+
+# url = 'https://en.wikipedia.org/wiki/Mathematics'
 
 artical = Article(url)
 artical.download()
@@ -12,11 +18,23 @@ artical.parse()
 artical.nlp()
 
 text = artical.summary
-# print(text)
+st.write("")
+st.write("")
+st.subheader("Summary")
+st.write(text)
 
 blob = TextBlob(text)
 sentiment = blob.sentiment.polarity
+
+st.write("")
+st.write("")
+st.subheader("Result")
 if sentiment >= 0:
-    print("it is positive - 😁")
+    st.success("it is positive - 😁")
+    st.balloons()
 else:
-    print("it is negative - ☹️")
+    st.error("it is negative - ☹️")
+
+st.write("")
+st.write("")
+st.write(f"the page is analysed from [Here]({url})")
