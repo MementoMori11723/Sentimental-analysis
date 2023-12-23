@@ -1,7 +1,8 @@
-
+import nltk
 from textblob import TextBlob
 from newspaper import Article
 import streamlit as st
+nltk.download('punkt')
 st.set_page_config(page_title="Sentimental analysis",
                    page_icon=None, layout="centered")
 
