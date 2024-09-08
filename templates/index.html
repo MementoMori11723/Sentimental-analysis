@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sentiment Analysis</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+  <link rel="icon" type="x-icon" href="/static/favicon.ico" />
+</head>
+
+<body class="bg-gray-100 min-h-screen flex flex-col items-center justify-center">
+  <div class="bg-white shadow-md rounded-lg p-8 max-w-md w-full">
+    <h1 class="text-3xl font-bold mb-6 text-center text-gray-800">
+      Sentiment Analysis
+    </h1>
+
+    <form action="/" method="POST" class="mb-6">
+      <label for="text" class="block text-gray-700 font-semibold mb-2">Enter text or URL:</label>
+      <textarea name="inputText" rows="5" class="w-full p-2 border border-gray-300 rounded-lg mb-4"
+        placeholder="Enter text here..."></textarea>
+      <button type="submit" class="w-full bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600 transition">
+        Analyze Sentiment
+      </button>
+    </form>
+
+    {{ if .Summary }}
+    <div class="bg-gray-100 p-4 rounded-lg shadow-md">
+      <h2 class="text-xl font-semibold mb-4">Summary:</h2>
+      <p class="text-gray-700">{{ .Summary }}</p>
+
+      <h2 class="text-xl font-semibold mt-6 mb-4">Sentiment:</h2>
+      <p class="text-gray-700">{{ .Sentiment }}</p>
+    </div>
+    {{ end }}
+  </div>
+</body>
+
+</html>
