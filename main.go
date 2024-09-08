@@ -2,12 +2,13 @@ package main
 
 import (
 	"fmt"
+	"html/template"
 	"io"
 	"log"
 	"net/http"
 	"net/url"
+	"os"
 	"strings"
-	"html/template"
 	"unicode"
 )
 
@@ -17,11 +18,15 @@ type Result struct {
 }
 
 func main() {
+  PORT := os.Getenv("PORT")
+  if PORT == "" {
+    PORT = "8080"
+  }
   http.HandleFunc("/", handleHome)
   http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 
-  log.Println("Server started on http://localhost:8080")
-  log.Fatal(http.ListenAndServe(":8080", nil))
+  log.Println("Server started on http://localhost:" + PORT)
+  log.Fatal(http.ListenAndServe(":"+PORT, nil))
 }
 
 func handleHome(w http.ResponseWriter, r *http.Request) {
