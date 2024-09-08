@@ -17,14 +17,11 @@ type Result struct {
 }
 
 func main() {
-  go func() {
-    http.HandleFunc("/", handleHome)
-    http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
+  http.HandleFunc("/", handleHome)
+  http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 
-    log.Println("Server started on http://localhost:8080")
-    log.Fatal(http.ListenAndServe(":8080", nil))
-  }()
-  fmt.Scanln()
+  log.Println("Server started on http://localhost:8080")
+  log.Fatal(http.ListenAndServe(":8080", nil))
 }
 
 func handleHome(w http.ResponseWriter, r *http.Request) {
@@ -134,4 +131,3 @@ func analyzeSentiment(text string) string {
 	}
 	return "Neutral"
 }
-
