@@ -14,5 +14,5 @@ jobs:
       run: docker build . -t mementomori11723/sentimental-analysis:latest
     - name: Push the image
       run: |
-        docker login -u mentomori11723 -p ${{ secrets.DEPLOY_KEY }}
+        docker login -u mementomori11723 -p ${{ secrets.DEPLOY_KEY }}
         docker push mementomori11723/sentimental-analysis:latest
