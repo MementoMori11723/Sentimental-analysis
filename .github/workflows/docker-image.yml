@@ -1,20 +1,18 @@
 name: Docker Image CI
 
 on:
-  push:
-    branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
+  [workflow_dispatch]
 
 jobs:
 
-  build:
-
+  publish_images:
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout the repository
+      uses: actions/checkout@v4
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag mementomori11723/sentimental-analysis:latest
+      run: docker build . -t mementomori11723/sentimental-analysis:latest
     - name: Push the image
-      run: docker push mementomori11723/sentimental-analysis:latest
+      run: |
+        docker login -u mentomori11723 -p ${{ secrets.DEPLOY_KEY }}
+        docker push mementomori11723/sentimental-analysis:latest
