@@ -18,15 +18,18 @@ type Result struct {
 }
 
 func main() {
-  PORT := os.Getenv("PORT")
-  if PORT == "" {
-    PORT = "8080"
-  }
-  http.HandleFunc("/", handleHome)
-  http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
+	PORT := os.Getenv("PORT")
+	if PORT == "" {
+		PORT = "8080"
+	}
 
-  log.Println("Server started on http://localhost:" + PORT)
-  log.Fatal(http.ListenAndServe(":"+PORT, nil))
+	http.HandleFunc("/", handleHome)
+
+	// Serve static files from the static directory on the filesystem
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
+
+	log.Println("Server started on http://localhost:" + PORT)
+	log.Fatal(http.ListenAndServe(":"+PORT, nil))
 }
 
 func handleHome(w http.ResponseWriter, r *http.Request) {
@@ -59,7 +62,11 @@ func handleHome(w http.ResponseWriter, r *http.Request) {
 }
 
 func renderTemplate(w http.ResponseWriter, data Result) {
-	tmpl := template.Must(template.ParseFiles("templates/index.html"))
+	tmpl, err := template.ParseFiles("templates/index.html")
+	if err != nil {
+		http.Error(w, "Failed to parse template", http.StatusInternalServerError)
+		return
+	}
 	tmpl.Execute(w, data)
 }
 
@@ -84,9 +91,6 @@ func fetchTextFromURL(inputURL string) (string, error) {
 }
 
 func extractTextFromHTML(htmlContent string) string {
-	// A very basic and rudimentary way to extract visible text from HTML
-	// by removing all the tags. This is not a perfect solution, but
-	// it works for this example without using a third-party library.
 	inTag := false
 	var output strings.Builder
 	for _, ch := range htmlContent {
@@ -110,28 +114,51 @@ func summarizeText(text string) string {
 }
 
 func analyzeSentiment(text string) string {
-	positiveWords := []string{"good", "happy", "love", "great", "excellent", "positive", "awesome"}
-	negativeWords := []string{"bad", "sad", "hate", "terrible", "horrible", "negative"}
+	// Dictionaries with weights for sentiment analysis
+	positiveWords := map[string]int{
+		"good": 2, "happy": 3, "love": 4, "great": 3,
+		"excellent": 5, "positive": 2, "awesome": 4,
+	}
+	negativeWords := map[string]int{
+		"bad": 2, "sad": 3, "hate": 4, "terrible": 5,
+		"horrible": 5, "negative": 2,
+	}
+	neutralWords := map[string]int{
+		"okay": 1, "average": 1, "fine": 1,
+	}
 
+	// Normalize text and tokenize
 	text = strings.ToLower(text)
-	posCount, negCount := 0, 0
+	words := strings.FieldsFunc(text, func(c rune) bool { return !unicode.IsLetter(c) })
 
-	for _, word := range strings.FieldsFunc(text, func(c rune) bool { return !unicode.IsLetter(c) }) {
-		for _, pos := range positiveWords {
-			if word == pos {
-				posCount++
-			}
+	// Calculate sentiment scores
+	posScore, negScore, neutralScore := 0, 0, 0
+	for _, word := range words {
+		if weight, found := positiveWords[word]; found {
+			posScore += weight
 		}
-		for _, neg := range negativeWords {
-			if word == neg {
-				negCount++
-			}
+		if weight, found := negativeWords[word]; found {
+			negScore += weight
+		}
+		if weight, found := neutralWords[word]; found {
+			neutralScore += weight
 		}
 	}
 
-	if posCount > negCount {
+	// Compute net sentiment score
+	totalScore := posScore - negScore
+	totalWords := len(words)
+
+	// Normalize sentiment score
+	normalizedScore := 0.0
+	if totalWords > 0 {
+		normalizedScore = float64(totalScore) / float64(totalWords)
+	}
+
+	// Categorize sentiment
+	if normalizedScore > 0.2 {
 		return "Positive"
-	} else if negCount > posCount {
+	} else if normalizedScore < -0.2 {
 		return "Negative"
 	}
 	return "Neutral"
